@@ -1,14 +1,21 @@
 import { FlatList, ListRenderItemInfo, StyleSheet, View } from 'react-native';
-import { MEALS } from '../data/dummy-data';
+import { MEALS, CATEGORIES } from '../data/dummy-data';
 import { StaticScreenProps } from '@react-navigation/native';
 import { MealType } from '../types/meal.type';
 import MealItem from '../components/MealItem';
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/types/navigation';
+import { useEffect, useLayoutEffect } from 'react';
 
-type Props = StaticScreenProps<{
-  categoryId: string;
-}>;
+// navigation 타입 동적으로 받는법
+type Props = NativeStackScreenProps<RootStackParamList, 'MealsOverview'>;
 
-const MealsOverviewScreen = ({ route }: Props) => {
+const MealsOverviewScreen = ({ route, navigation }: Props) => {
+  console.log('wjqrms');
+
   // CategoriesScreen에서 매개변수로 categoryId를 넘겨 줬으므로 이렇게 사용이 가능
   const catId = route.params.categoryId;
 
@@ -16,8 +23,33 @@ const MealsOverviewScreen = ({ route }: Props) => {
     return mealItem.categoryIds.indexOf(catId) >= 0;
   });
 
+  // 컴포넌트 실행될 떄 실행 되도록 useLayoutEffect() 사용
+  useLayoutEffect(() => {
+    const categoryTitle = CATEGORIES.find(
+      (category) => category.id === catId,
+    )?.title;
+
+    navigation.setOptions({
+      title: categoryTitle,
+    });
+  }, [catId, navigation]);
+
   const renderMealItem = (itemData: ListRenderItemInfo<MealType>) => {
-    return <MealItem title={itemData.item.title} />;
+    const item = itemData.item;
+
+    const mealItemProps = {
+      title: item.title,
+      imageUrl: item.imageUrl,
+      affordability: item.affordability,
+      complexity: item.complexity,
+      duration: item.duration,
+    };
+    return (
+      <MealItem
+        {...mealItemProps}
+        onPress={() => navigation.navigate('FoodInfo', { mealItem: item })}
+      />
+    );
   };
 
   return (
