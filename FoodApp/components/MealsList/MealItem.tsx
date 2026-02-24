@@ -1,4 +1,4 @@
-import FoodInfo from '@/screens/FoodInfo';
+import FoodInfo from '@/screens/MealDetailScreen';
 import {
   Image,
   Platform,
@@ -7,47 +7,58 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/types/navigation';
+import MealDetails from '../MealDetails';
 
 type Props = {
+  id: string;
   title: string;
   imageUrl: string;
   duration: number;
   complexity: string;
   affordability: string;
-  onPress: () => void;
 };
 
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'MealDetail'
+>;
+
 const MealItem = ({
+  id,
   title,
   imageUrl,
   duration,
   complexity,
   affordability,
-  onPress,
 }: Props) => {
-  const pressItem = () => {
-    console.log('클릭');
+  const navigation = useNavigation<NavigationProp>();
 
-    return <FoodInfo />;
+  const selectMealItemHandler = () => {
+    // 여기서 App.tsx에서 등록한 상세 페이지 식별자 사용
+    navigation.navigate('MealDetail', {
+      mealId: id,
+    });
   };
-
   return (
     <View style={styles.mealItem}>
       <Pressable
         android_ripple={{ color: '#ccc' }}
         style={({ pressed }) => (pressed ? styles.buttonPressed : null)}
-        onPress={onPress}
+        onPress={selectMealItemHandler}
       >
         <View style={styles.innerContainer}>
           {/* 웹 상에서 불러오는 이미지는 StyleSheet를 통해 따로 스타일링 해줘야함 */}
           <Image source={{ uri: imageUrl }} style={styles.image} />
           <Text style={styles.title}>{title}</Text>
         </View>
-        <View style={styles.details}>
-          <Text style={styles.detailItem}>{duration}m</Text>
-          <Text style={styles.detailItem}>{complexity.toUpperCase()}</Text>
-          <Text style={styles.detailItem}>{affordability.toUpperCase()}</Text>
-        </View>
+        <MealDetails
+          duration={duration}
+          complexity={complexity}
+          affordability={affordability}
+        />
       </Pressable>
     </View>
   );
@@ -83,15 +94,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     margin: 8,
-  },
-  details: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  detailItem: {
-    marginHorizontal: 4,
-    fontSize: 12,
   },
 });

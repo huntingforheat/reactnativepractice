@@ -3,7 +3,7 @@ import { CATEGORIES } from '../data/dummy-data';
 import CategoryGridTile from '../components/CategoryGridTile';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import FoodInfo from './FoodInfo';
+import FoodInfo from './MealDetailScreen';
 
 interface Category {
   id: string;
