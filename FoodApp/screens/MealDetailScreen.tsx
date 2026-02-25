@@ -15,23 +15,36 @@ import List from '@/components/MealDetail/List';
 import { useContext, useLayoutEffect } from 'react';
 import IconButton from '@/components/IconButton';
 import { FavoritesContext } from '@/store/context/favorites-context';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '@/store/redux/store';
+import { addFavorite, removeFavorite } from '../store/redux/favorites';
 
 type NavigationProps = NativeStackScreenProps<RootStackParamList, 'MealDetail'>;
 
 const MealDetailScreen = ({ route, navigation }: NavigationProps) => {
-  const favoriteMealsCtx = useContext(FavoritesContext);
+  // const favoriteMealsCtx = useContext(FavoritesContext);
+
+  // 해당 코드로 Redux Slice에서 관리하는 모든 즐겨찾기 id를 얻을 수 있음
+  const favoriteMealIds = useSelector(
+    (state: RootState) => state.favoriteMeals.ids,
+  );
+
+  // 선언해둔 reducer로 dispatch 하기
+  const dispatch = useDispatch();
+
   const mealId = route.params.mealId;
 
   // 즐겨찾기에 등록 되어 있는 경우
-  const mealIsFavorite = favoriteMealsCtx.ids.includes(mealId);
+  const mealIsFavorite = favoriteMealIds.includes(mealId);
 
   const selectedMeal = MEALS.find((meal) => meal.id === mealId);
 
   const changeFavoriteStatusHandler = () => {
     if (mealIsFavorite) {
-      favoriteMealsCtx.removeFavorite(mealId);
+      // favoriteMealsCtx.removeFavorite(mealId);
+      dispatch(removeFavorite({ id: mealId }));
     } else {
-      favoriteMealsCtx.addFavorite(mealId);
+      dispatch(addFavorite({ id: mealId }));
     }
   };
 
