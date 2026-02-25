@@ -6,18 +6,23 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const ExpenseItem = ({
+  id,
   description,
   amount,
   date,
 }: {
+  id: string;
   description: string;
   amount: number;
   date: Date;
 }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const expensePressHandler = () => {
-    navigation.navigate('ManageExpense');
+    navigation.navigate('ManageExpense', {
+      expenseId: id,
+    });
   };
 
   return (
